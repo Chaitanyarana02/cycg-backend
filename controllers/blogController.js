@@ -1,5 +1,7 @@
 const Blog = require("../models/Blog");
 const Category = require("../models/Category");
+const fs = require("fs");
+const path = require("path");
 
 const buildImageUrl = (req, imageName) => {
   if (!imageName) return null;
@@ -79,10 +81,6 @@ exports.getBlogById = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
-const fs = require('fs');
-const path = require('path');
-const Category = require('../models/Category');
 
 exports.updateBlog = async (req, res) => {
   try {
