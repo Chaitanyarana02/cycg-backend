@@ -85,3 +85,25 @@ exports.deleteCategory = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.reorderCategories = async (req, res) => {
+  try {
+    const categories = req.body;
+
+    if (!Array.isArray(categories)) {
+      return res.status(400).json({ message: "Invalid data format" });
+    }
+
+    for (let category of categories) {
+      await Category.update(
+        { position: category.position },
+        { where: { id: category.id } }
+      );
+    }
+
+    res.status(200).json({ message: "Category order updated successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+

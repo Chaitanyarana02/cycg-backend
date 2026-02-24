@@ -46,7 +46,14 @@ exports.createBlog = async (req, res) => {
 };
 exports.getBlogs = async (req, res) => {
   try {
+    const { categoryId } = req.query;
+    let whereCondition = {};
+    if (categoryId) {
+      whereCondition.categoryId = categoryId;
+    }
+
     const blogs = await Blog.findAll({
+      where: whereCondition,
       include: Category,
       order: [["position", "ASC"]],
     });
