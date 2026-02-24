@@ -2,8 +2,13 @@ const Category = require('../models/Category');
 
 exports.createCategory = async (req, res) => {
   try {
+     const maxPosition = await Category.max('position');
+
+    const nextPosition = (maxPosition || 0) + 1;
+
     const category = await Category.create({
-      name: req.body.name
+      name: req.body.name,
+      position: nextPosition
     });
 
     res.status(201).json({
@@ -20,7 +25,7 @@ exports.createCategory = async (req, res) => {
 exports.getCategories = async (req, res) => {
   try {
     const categories = await Category.findAll({
-      order: [['id', 'ASC']]
+      order: [['position', 'ASC']]
     });
 
     res.status(200).json(categories);
