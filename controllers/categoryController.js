@@ -22,18 +22,18 @@ exports.createCategory = async (req, res) => {
 };
 
 
-// exports.getCategories = async (req, res) => {
-//   try {
-//     const categories = await Category.findAll({
-//       order: [['position', 'ASC']]
-//     });
+exports.getCategories = async (req, res) => {
+  try {
+    const categories = await Category.findAll({
+      order: [['position', 'ASC']]
+    });
 
-//     res.status(200).json(categories);
+    res.status(200).json(categories);
 
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
 exports.getCategoryById = async (req, res) => {
   try {
