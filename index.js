@@ -12,6 +12,7 @@ app.use('/uploads', express.static('uploads'));
 
 app.use('/api/categories', require('./routes/categoryRoutes'));
 app.use('/api/blogs', require('./routes/blogRoutes'));
+app.use('/api/contacts', require('./routes/contactRoutes'));
 
 app.get('/', (req, res) => {
   res.send('Blog API Running 🚀');
