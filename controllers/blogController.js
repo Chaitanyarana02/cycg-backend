@@ -1,5 +1,6 @@
 const Blog = require("../models/Blog");
 const Category = require("../models/Category");
+const WhitePaper = require("../models/WhitePaper");
 const fs = require("fs");
 const path = require("path");
 
@@ -10,7 +11,7 @@ const buildImageUrl = (req, imageName) => {
 
 exports.createBlog = async (req, res) => {
   try {
-    const { title, content, categoryId, position } = req.body;
+    const { title, content, categoryId, position, whitePaperId } = req.body;
     if (!categoryId) {
       return res.status(400).json({
         message: "categoryId is required",
@@ -23,6 +24,12 @@ exports.createBlog = async (req, res) => {
         message: "Category not found",
       });
     }
+    if (whitePaperId) {
+      const wp = await WhitePaper.findByPk(whitePaperId);
+      if (!wp) {
+        return res.status(404).json({ message: "White paper not found" });
+      }
+    }
     const image = req.file ? req.file.filename : null;
 
     const blog = await Blog.create({
@@ -31,6 +38,7 @@ exports.createBlog = async (req, res) => {
       categoryId,
       position: position || 0,
       image,
+      whitePaperId: whitePaperId || null,
     });
 
     const blogData = blog.toJSON();
@@ -54,13 +62,21 @@ exports.getBlogs = async (req, res) => {
 
     const blogs = await Blog.findAll({
       where: whereCondition,
-      include: Category,
+      include: [
+        Category,
+        { model: WhitePaper, as: "WhitePaper", attributes: ["id", "originalName", "url", "filename"] },
+      ],
       order: [["position", "ASC"]],
     });
 
     const updatedBlogs = blogs.map((blog) => {
       const blogData = blog.toJSON();
       blogData.image = buildImageUrl(req, blog.image);
+      if (blogData.WhitePaper) {
+        blogData.downloadWhitePaperUrl = `${req.protocol}://${req.get("host")}/api/whitepaper/${blogData.WhitePaper.id}/download`;
+      } else {
+        blogData.downloadWhitePaperUrl = null;
+      }
       return blogData;
     });
 
@@ -73,7 +89,10 @@ exports.getBlogs = async (req, res) => {
 exports.getBlogById = async (req, res) => {
   try {
     const blog = await Blog.findByPk(req.params.id, {
-      include: Category,
+      include: [
+        Category,
+        { model: WhitePaper, as: "WhitePaper", attributes: ["id", "originalName", "url", "filename"] },
+      ],
     });
 
     if (!blog) {
@@ -82,6 +101,11 @@ exports.getBlogById = async (req, res) => {
 
     const blogData = blog.toJSON();
     blogData.image = buildImageUrl(req, blog.image);
+    if (blogData.WhitePaper) {
+      blogData.downloadWhitePaperUrl = `${req.protocol}://${req.get("host")}/api/whitepaper/${blogData.WhitePaper.id}/download`;
+    } else {
+      blogData.downloadWhitePaperUrl = null;
+    }
 
     res.json(blogData);
   } catch (error) {
@@ -118,12 +142,22 @@ exports.updateBlog = async (req, res) => {
       }
     }
 
+    if (req.body.whitePaperId !== undefined) {
+      if (req.body.whitePaperId) {
+        const wp = await WhitePaper.findByPk(req.body.whitePaperId);
+        if (!wp) {
+          return res.status(404).json({ message: "White paper not found" });
+        }
+      }
+    }
+
     await blog.update({
       title: req.body.title ?? blog.title,
       content: req.body.content ?? blog.content,
       categoryId: req.body.categoryId ?? blog.categoryId,
       position: req.body.position ?? blog.position,
-      image
+      image,
+      whitePaperId: req.body.whitePaperId !== undefined ? (req.body.whitePaperId || null) : blog.whitePaperId,
     });
 
     const blogData = blog.toJSON();

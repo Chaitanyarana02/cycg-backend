@@ -1,6 +1,7 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/db");
 const Category = require("./Category");
+const WhitePaper = require("./WhitePaper");
 
 const Blog = sequelize.define(
   "Blog",
@@ -25,6 +26,10 @@ const Blog = sequelize.define(
       allowNull: false,
       defaultValue: 0,
     },
+    whitePaperId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   },
   {
     timestamps: true,
@@ -33,5 +38,6 @@ const Blog = sequelize.define(
 
 Category.hasMany(Blog, { foreignKey: "categoryId" });
 Blog.belongsTo(Category, { foreignKey: "categoryId" });
+Blog.belongsTo(WhitePaper, { foreignKey: "whitePaperId" });
 
 module.exports = Blog;
