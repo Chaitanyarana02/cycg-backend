@@ -13,7 +13,7 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     const ext = path.extname(file.originalname) || '.pdf';
-    const uniqueName = Date.now() + '-' + (file.originalname || 'whitepaper').replace(/[^a-zA-Z0-9.-]/g, '_');
+    const uniqueName = Date.now() + '-' + (file.originalname || 'document.pdf').replace(/[^a-zA-Z0-9.-]/g, '_');
     cb(null, uniqueName);
   }
 });
