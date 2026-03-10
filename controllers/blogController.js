@@ -11,7 +11,7 @@ const buildImageUrl = (req, imageName) => {
 
 exports.createBlog = async (req, res) => {
   try {
-    const { title, content, categoryId, position, whitePaperId } = req.body;
+    const { title, content, categoryId, position, whitePaperId, whitePaperCtaTitle, whitePaperButtonText } = req.body;
     if (!categoryId) {
       return res.status(400).json({
         message: "categoryId is required",
@@ -39,6 +39,8 @@ exports.createBlog = async (req, res) => {
       position: position || 0,
       image,
       whitePaperId: whitePaperId || null,
+      whitePaperCtaTitle: whitePaperCtaTitle || null,
+      whitePaperButtonText: whitePaperButtonText || null,
     });
 
     const blogData = blog.toJSON();
@@ -158,6 +160,8 @@ exports.updateBlog = async (req, res) => {
       position: req.body.position ?? blog.position,
       image,
       whitePaperId: req.body.whitePaperId !== undefined ? (req.body.whitePaperId || null) : blog.whitePaperId,
+      whitePaperCtaTitle: req.body.whitePaperCtaTitle !== undefined ? (req.body.whitePaperCtaTitle || null) : blog.whitePaperCtaTitle,
+      whitePaperButtonText: req.body.whitePaperButtonText !== undefined ? (req.body.whitePaperButtonText || null) : blog.whitePaperButtonText,
     });
 
     const blogData = blog.toJSON();

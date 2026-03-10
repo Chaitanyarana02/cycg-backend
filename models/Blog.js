@@ -30,6 +30,14 @@ const Blog = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    whitePaperCtaTitle: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    whitePaperButtonText: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
   },
   {
     timestamps: true,
